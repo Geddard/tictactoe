@@ -30,7 +30,7 @@ class Board extends React.Component {
         return (
             <div key={index} className="tile">
                 <div className="tile--content">
-                    {tile}
+                    ⨯○
                 </div>
             </div>
         );

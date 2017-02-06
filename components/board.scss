@@ -8,20 +8,17 @@
         box-sizing: border-box;
         cursor: pointer;
         float: left;
+        min-height: 160px;
         position: relative;
         width: calc(100% / 3);
 
         &--content {
+            font-family: Helvetica, Arial, 'Sans serif';
+            font-size: 100px;
             left: 50%;
             position: absolute;
             top: 50%;
             transform: translate(-50%, -50%);
-        }
-
-        &::before {
-            content: '';
-            display: block;
-            padding-top: 100%;
         }
     }
 }
