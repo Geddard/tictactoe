@@ -1,0 +1,27 @@
+.board {
+    color: #fff;
+    margin: 100px auto;
+    max-width: 500px;
+
+    .tile {
+        border: 1px solid #737377;
+        box-sizing: border-box;
+        cursor: pointer;
+        float: left;
+        position: relative;
+        width: calc(100% / 3);
+
+        &--content {
+            left: 50%;
+            position: absolute;
+            top: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        &::before {
+            content: '';
+            display: block;
+            padding-top: 100%;
+        }
+    }
+}

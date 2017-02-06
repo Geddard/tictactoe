@@ -1,0 +1,30 @@
+body {
+    background-color: #222;
+}
+
+.app {
+    color: #fff;
+    text-align: center;
+
+    &--title {
+        font-size: 50px;
+        font-weight: bold;
+    }
+
+    &--rules {
+        font-size: 30px;
+
+        &-symbol {
+            font-weight: bold;
+            padding: 0 5px;
+
+            &-x {
+                color: #f00;
+            }
+
+            &-o {
+                color: #3535ca;
+            }
+        }
+    }
+}
