@@ -1,41 +1,63 @@
 import React from 'react';
+import { addStone } from 'redux/actions';
+import { connect } from 'react-redux';
 
 class Board extends React.Component {
 
-    constructor() {
-        super();
-
-        this.tiles = [
-            'upperLeft',
-            'upperCenter',
-            'upperRight',
-            'middleLeft',
-            'middleCenter',
-            'middleRight',
-            'lowerLeft',
-            'lowerCenter',
-            'lowerRight'
-        ];
-    }
+    static defaultProps = {
+        tiles: []
+    };
 
     render() {
         return (
             <div className="board">
-                {this.tiles.map(this.renderTile)}
+                {this.props.tiles.map((tile, index) => this.renderTile(tile, index))}
             </div>
         );
     }
 
     renderTile(tile, index) {
         return (
-            <div key={index} className="tile">
+            <div {...this.getTileProps(tile, index)}>
                 <div className="tile--content">
-                    ⨯○
+                    {tile}
                 </div>
             </div>
         );
     }
+
+    getTileProps(tile, index) {
+        return {
+            className: 'tile',
+            key: index,
+            onClick: (event) => this.handleTileClick(event, index)
+        }
+    }
+
+    handleTileClick(event, index) {
+        this.props.addStone(index);
+    }
 }
 
-export default Board;
+var mapStateToProps = function (state) {
+    var game = state.game;
+
+    return {
+        nextStone: game.nextStone,
+        tiles: game.tiles
+    };
+}
+
+var mapDispatchToProps = function (dispatch) {
+    return {
+        addStone: function (tileId) {
+            dispatch({
+                type: 'add_stone',
+                tileId: tileId
+            });
+        }
+    };
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Board);
 

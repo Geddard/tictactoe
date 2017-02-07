@@ -22,7 +22,8 @@ var handleErrors = function () {
 
 var paths = [
     'main.js',
-    'components/*.js'
+    'components/*.js',
+    'redux/**/*.js'
 ];
 var scssPaths = [
     '*.scss',
