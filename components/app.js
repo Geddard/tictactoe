@@ -5,36 +5,50 @@ class App extends React.Component {
 
     constructor() {
         super();
+
+        this.state = {
+            gameMode: 'solo',
+            selectionMade: false
+        };
     }
 
     render() {
         return (
             <div className="app">
-                <div className="app--title">
-                    TIC TAC TOE
-                </div>
-                {this.renderRules()}
-                <Board />
+                {this.renderContent()}
             </div>
         );
     }
 
-    renderRules() {
+    renderContent() {
+        var contentToRender = null;
+
+        if (!this.state.selectionMade) {
+            contentToRender = this.renderSelectionPropmt();
+        } else {
+            contentToRender = <Board gameMode={this.state.gameMode} />;
+        }
+
+        return contentToRender;
+    }
+
+    renderSelectionPropmt() {
         return (
-            <div className="app--rules">
-                Click on a tile to fill it with and
-                <span className="app--rules-symbol app--rules-symbol-x">
-                    X
-                </span>
-                 or an
-                <span className="app--rules-symbol app--rules-symbol-o">
-                    O
-                </span>
+            <div>
+                <div className="app--mode-title">Select game mode</div>
                 <div>
-                    (X always plays first)
+                    <button className="app--mode-button" onClick={() => this.setGameMode('solo')}>Solo</button>
+                    <button className="app--mode-button" onClick={() => this.setGameMode('multiplayer')}>Multiplayer</button>
                 </div>
             </div>
         );
+    }
+
+    setGameMode(mode) {
+        this.setState({
+            gameMode: mode,
+            selectionMade: true
+        });
     }
 }
 

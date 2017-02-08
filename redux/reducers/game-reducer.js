@@ -14,6 +14,7 @@ var stones = {
     x: 'x',
     o: 'o'
 };
+var winningCombination = [];
 var initialState = {
     draw: false,
     draws: 0,
@@ -35,8 +36,10 @@ var checkForWinners = function (newState) {
     _.map(winningCombinations, function (combination) {
         if (isThereAWinner(combination, stones.x, newState.tiles)) {
             winner = stones.x;
+            winningCombination = combination;
         } else if (isThereAWinner(combination, stones.o, newState.tiles)) {
             winner = stones.o;
+            winningCombination = combination;
         }
     });
 
@@ -66,6 +69,10 @@ export default function (state, action) {
                 if (filteredTiles.length > 4) {
                     newState.winner = checkForWinners(newState);
 
+                    if (winningCombination.length) {
+                        newState.winningCombination = winningCombination;
+                    }
+
                     if (filteredTiles.length === newState.tiles.length && !newState.winner) {
                         newState.draw = true;
                     }
@@ -77,9 +84,12 @@ export default function (state, action) {
         case 'reset_game':
             var resetState = {
                 draw: initialState.draw,
+                nextStone: initialState.nextStone,
                 tiles: initialState.tiles,
                 winner: initialState.winner
             };
+
+            newState.winningCombination = [];
 
             return _.extend(newState, resetState);
 
