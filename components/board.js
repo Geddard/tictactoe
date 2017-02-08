@@ -8,16 +8,45 @@ class Board extends React.Component {
         tiles: []
     };
 
-    constructor() {
+    constructor(props) {
         super();
 
         this.socket = io();
+
+        if (props.gameMode === 'multiplayer') {
+            this.room = 'room123';
+            this.id = '';
+        }
+
+        this.state = {
+            lastUserInput: ''
+        };
     }
 
     componentDidMount() {
-        this.socket.on('update_board', function (data) {
+        var isMultiplayer = (this.props.gameMode === 'multiplayer');
+
+        if (isMultiplayer) {
+            this.socket.on('connect', () => {
+                this.socket.emit('room', this.room);
+            });
+
+            this.socket.on('assing_id', (id) => {
+                this.id = id;
+            });
+        } else {
+            this.id = 'soloUser';
+        }
+
+        this.socket.on('update_board', (data) => {
             this.props.addStone(data);
-        }.bind(this));
+
+            if (isMultiplayer) {
+                this.setState({
+                    lastUserInput: data.userId
+                });
+            }
+        });
     }
 
     shouldComponentUpdate(nextProps) {
@@ -44,21 +73,24 @@ class Board extends React.Component {
     }
 
     renderWinner() {
+        var draw = this.props.draw;
         var winner = this.props.winner;
         var result;
 
         if (winner) {
             result = 'And the winner is: ' + winner +  '!';
-        } else if (this.props.draw) {
+        } else if (draw) {
             result = 'It\'s a draw!';
         }
 
-        return (
-            <div>
-                <div>{result}</div>
-                <button onClick={this.props.reset}>RESET</button>
-            </div>
-        );
+        if (winner || draw) {
+            return (
+                <div>
+                    <div>{result}</div>
+                    <button className="board--button" onClick={() => this.resetGame()}>RESET</button>
+                </div>
+            );
+        }
     }
 
     getTileProps(tile, index) {
@@ -69,10 +101,30 @@ class Board extends React.Component {
         };
     }
 
-    handleTileClick(index, nextStone) {
-        if (!this.props.winner) {
-            this.socket.emit('add_stone', {index: index, nextStone: this.props.nextStone});
+    handleTileClick(index) {
+        var data;
+
+        if (!this.props.winner && (this.state.lastUserInput !== this.id)) {
+            data = {
+                index: index,
+                userId: this.id,
+                nextStone: this.props.nextStone,
+                room: this.room
+            };
+
+            if (this.props.gameMode === 'multiplayer') {
+                this.socket.emit('add_stone', data);
+            } else {
+                this.socket.emit('add_stone_solo', data);
+            }
         }
+    }
+
+    resetGame() {
+        this.props.reset();
+        this.setState({
+            lastUserInput: ''
+        });
     }
 }
 
@@ -102,6 +154,13 @@ var mapDispatchToProps = function (dispatch) {
             });
         }
     };
+};
+
+Board.propTypes = {
+    draw: React.PropTypes.bool,
+    gameMode: React.PropTypes.string,
+    tiles: React.PropTypes.array,
+    winner: React.PropTypes.string
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Board);

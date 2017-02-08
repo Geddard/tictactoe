@@ -1,3 +1,4 @@
+var _ = require('lodash');
 var express = require('express');
 var path = require('path');
 
@@ -17,13 +18,19 @@ var server = app.listen(port, function(){
 
 var io = require('socket.io')(server);
 
+
 io.on('connection', (socket) => {
-    socket.on('room', function(room) {
+    socket.on('room', (room) => {
         socket.join(room);
+        socket.emit('assing_id', _.uniqueId('user_'));
     });
 
-    socket.on('dispatch', function(data) {
-        socket.broadcast.to(data.room)
-            .emit('dispatch', data);
+    socket.on('add_stone', (data) => {
+        room = data.room;
+        io.sockets.in(data.room).emit('update_board', data);
+    });
+
+    socket.on('add_stone_solo', (data) => {
+        socket.emit('update_board', data);
     });
 });

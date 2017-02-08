@@ -2,6 +2,23 @@
     color: #fff;
     margin: 50px auto;
     max-width: 500px;
+    position: relative;
+
+    &--button {
+        background-color: #5551D9;
+        border-color: #5551D9;
+        border-radius: 5px;
+        color: #ccc;
+        font-size: 20px;
+        font-weight: bold;
+        margin-top: 30px;
+        padding: 20px;
+        width: 30%;
+    }
+
+    &--waiting {
+        position: absolute;
+    }
 
     .tile {
         border: 1px solid #737377;
