@@ -1,23 +1,35 @@
 .board {
-    color: #fff;
-    margin: 50px auto;
+    height: 500px;
+    left: 50%;
     max-width: 500px;
     position: relative;
+    transform: translateX(-50%);
 
-    &--button {
-        background-color: #5551D9;
-        border-color: #5551D9;
-        border-radius: 5px;
-        color: #ccc;
-        font-size: 20px;
-        font-weight: bold;
-        margin-top: 30px;
-        padding: 20px;
-        width: 30%;
-    }
+    &--container {
+        animation: fadeIn 1.5s;
+        color: #fff;
 
-    &--waiting {
-        position: absolute;
+        &-result {
+            bottom: -150px;
+            font-size: 30px;
+            left: 50%;
+            padding: 10px;
+            position: absolute;
+            transform: translateX(-50%);
+            width: 100%;
+        }
+
+        &-button {
+            background-color: #5551D9;
+            border: 1px;
+            border-radius: 5px;
+            color: #ccc;
+            font-size: 20px;
+            font-weight: bold;
+            margin-top: 30px;
+            max-width: 200px;
+            padding: 20px;
+        }
     }
 
     .tile {
@@ -36,6 +48,27 @@
             position: absolute;
             top: 50%;
             transform: translate(-50%, -50%);
+
+            &_winner {
+                animation: fade 1s infinite;
+                color: #5551D9;
+            }
         }
     }
+}
+
+@keyframes fadeIn {
+    0% { opacity: 0; }
+
+    50% { opacity: .5; }
+
+    100% { opacity: 1; }
+}
+
+@keyframes fade {
+    0% { opacity: .5; }
+
+    50% { opacity: 1; }
+
+    100% { opacity: .5; }
 }

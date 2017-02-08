@@ -1,6 +1,7 @@
 import _ from 'lodash';
 import React from 'react';
 import { connect } from 'react-redux';
+import classNames from 'classnames';
 
 class Board extends React.Component {
 
@@ -56,7 +57,9 @@ class Board extends React.Component {
     render() {
         return (
             <div className="board">
-                {this.props.tiles.map((tile, index) => this.renderTile(tile, index))}
+                <div className="board--container">
+                    {this.props.tiles.map((tile, index) => this.renderTile(tile, index))}
+                </div>
                 {this.renderWinner()}
             </div>
         );
@@ -65,7 +68,7 @@ class Board extends React.Component {
     renderTile(tile, index) {
         return (
             <div {...this.getTileProps(tile, index)}>
-                <div className="tile--content">
+                <div className={this.getTileContentClass(index)}>
                     {tile}
                 </div>
             </div>
@@ -85,9 +88,9 @@ class Board extends React.Component {
 
         if (winner || draw) {
             return (
-                <div>
+                <div className="board--container-result">
                     <div>{result}</div>
-                    <button className="board--button" onClick={() => this.resetGame()}>RESET</button>
+                    <button className="board--container-button" onClick={() => this.resetGame()}>New Game</button>
                 </div>
             );
         }
@@ -99,6 +102,19 @@ class Board extends React.Component {
             key: index,
             onClick: () => this.handleTileClick(index)
         };
+    }
+
+    getTileContentClass(index) {
+        return classNames({
+            'tile--content': true,
+            'tile--content_winner': this.isThisAWinner(index)
+        });
+    }
+
+    isThisAWinner(index) {
+        if (this.props.winningCombination) {
+            return this.props.winningCombination.length && this.props.winningCombination.includes(index);
+        }
     }
 
     handleTileClick(index) {
@@ -135,7 +151,8 @@ var mapStateToProps = function (state) {
         draw: game.draw,
         nextStone: game.nextStone,
         tiles: game.tiles,
-        winner: game.winner
+        winner: game.winner,
+        winningCombination: game.winningCombination
     };
 };
 

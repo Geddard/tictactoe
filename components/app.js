@@ -35,10 +35,10 @@ class App extends React.Component {
     renderSelectionPropmt() {
         return (
             <div>
-                <div>Select game mode</div>
+                <div className="app--mode-title">Select game mode</div>
                 <div>
-                    <button onClick={() => this.setGameMode('solo')}>Solo</button>
-                    <button onClick={() => this.setGameMode('multiplayer')}>Multiplayer</button>
+                    <button className="app--mode-button" onClick={() => this.setGameMode('solo')}>Solo</button>
+                    <button className="app--mode-button" onClick={() => this.setGameMode('multiplayer')}>Multiplayer</button>
                 </div>
             </div>
         );

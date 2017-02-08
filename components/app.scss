@@ -11,23 +11,25 @@ body {
         font-weight: bold;
     }
 
-    &--waiting {
-        animation: fade 2s infinite;
-        font-size: 20px;
-        opacity: 1;
-    }
-}
+    &--mode {
 
-@keyframes fade {
-    0% {
-        opacity: 1;
-    }
+        &-title {
+            font-size: 50px;
+            opacity: 1;
+            padding: 20px;
+            text-transform: uppercase;
+        }
 
-    50% {
-        opacity: 0;
-    }
-
-    100% {
-        opacity: 1;
+        &-button {
+            background-color: #5551D9;
+            border-color: #5551D9;
+            color: #ccc;
+            font-size: 20px;
+            font-weight: bold;
+            margin: 10px;
+            padding: 10px;
+            text-transform: uppercase;
+            width: 200px;
+        }
     }
 }

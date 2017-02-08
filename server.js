@@ -18,7 +18,6 @@ var server = app.listen(port, function(){
 
 var io = require('socket.io')(server);
 
-
 io.on('connection', (socket) => {
     socket.on('room', (room) => {
         socket.join(room);
@@ -26,7 +25,6 @@ io.on('connection', (socket) => {
     });
 
     socket.on('add_stone', (data) => {
-        room = data.room;
         io.sockets.in(data.room).emit('update_board', data);
     });
 
