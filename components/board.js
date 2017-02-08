@@ -8,6 +8,18 @@ class Board extends React.Component {
         tiles: []
     };
 
+    constructor() {
+        super();
+
+        this.socket = io();
+    }
+
+    componentDidMount() {
+        this.socket.on('update_board', function (data) {
+            this.props.addStone(data);
+        }.bind(this));
+    }
+
     shouldComponentUpdate(nextProps) {
         return (!_.isEqual(this.props.tiles, nextProps.tiles));
     }
@@ -53,13 +65,13 @@ class Board extends React.Component {
         return {
             className: 'tile',
             key: index,
-            onClick: (event) => this.handleTileClick(event, index)
+            onClick: () => this.handleTileClick(index)
         };
     }
 
-    handleTileClick(event, index) {
+    handleTileClick(index, nextStone) {
         if (!this.props.winner) {
-            this.props.addStone(index, this.props.nextStone);
+            this.socket.emit('add_stone', {index: index, nextStone: this.props.nextStone});
         }
     }
 }
@@ -77,11 +89,11 @@ var mapStateToProps = function (state) {
 
 var mapDispatchToProps = function (dispatch) {
     return {
-        addStone: function (tileId, currentStone) {
+        addStone: function (data) {
             dispatch({
                 type: 'add_stone',
-                currentStone: currentStone,
-                tileId: tileId
+                currentStone: data.nextStone,
+                tileId: data.index
             });
         },
         reset: function () {

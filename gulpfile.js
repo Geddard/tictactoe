@@ -110,7 +110,10 @@ gulp.task('watch', ['copy'], function () {
 gulp.task('start', ['watch'], function () {
     nodemon({
         script: 'server.js',
-        watch: 'server.js'
+        watch: 'server.js',
+        env: {
+            'NODE_ENV': 'development'
+        }
     });
 });
 

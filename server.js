@@ -11,6 +11,19 @@ app.use(express.static(path.join(__dirname, 'dist')));
 
 app.use('/res', express.static(path.join(__dirname, 'resources')));
 
-app.listen(port, function(){
+var server = app.listen(port, function(){
     console.log('Started listening on port', port);
+});
+
+var io = require('socket.io')(server);
+
+io.on('connection', (socket) => {
+    socket.on('room', function(room) {
+        socket.join(room);
+    });
+
+    socket.on('dispatch', function(data) {
+        socket.broadcast.to(data.room)
+            .emit('dispatch', data);
+    });
 });
