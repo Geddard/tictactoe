@@ -19,13 +19,15 @@ class Board extends React.Component {
         }
 
         this.state = {
+            hideMessage: false,
             lastUserInput: '',
             restartRequested: false,
-            waitingForRestart: false
+            waitingForRestart: false,
+            waitingForPlayers: true
         };
     }
 
-    componentDidMount() {
+    componentWillMount() {
         if (this.isMultiplayer()) {
             this.socket.on('connect', () => {
                 this.socket.emit('room', this.room);
@@ -33,6 +35,26 @@ class Board extends React.Component {
 
             this.socket.on('assing_id', (id) => {
                 this.id = id;
+                this.socket.emit('get_player_count', this.room);
+            });
+
+            this.socket.on('waiting', () => {
+                this.setState({
+                    waitingForPlayers: true
+                });
+            });
+
+            this.socket.on('ready', () => {
+                this.setState({
+                    hideMessage: false,
+                    waitingForPlayers: false
+                });
+
+                setTimeout(() => {
+                    this.setState({
+                        hideMessage: true
+                    });
+                }, 2000);
             });
 
             this.socket.on('confirm_restart', () => {
@@ -67,6 +89,7 @@ class Board extends React.Component {
                     {this.props.tiles.map((tile, index) => this.renderTile(tile, index))}
                 </div>
                 <div className={this.getMarkerClass('right')}>O</div>
+                {this.renderWaitingForPlayers()}
                 {this.renderWinner()}
             </div>
         );
@@ -80,6 +103,22 @@ class Board extends React.Component {
                 </div>
             </div>
         );
+    }
+
+    renderWaitingForPlayers() {
+        var contentToRender = null;
+
+        if (this.state.waitingForPlayers) {
+            contentToRender = (
+                <div className="board--waiting-players">
+                    Waiting for at least one more player to join the room...
+                </div>
+           );
+        } else if (!this.state.hideMessage) {
+            contentToRender = <div className="board--player-joined">A player joined</div>;
+        }
+
+        return contentToRender;
     }
 
     renderWinner() {
@@ -125,13 +164,14 @@ class Board extends React.Component {
     getMarkerClass(side) {
         return classNames({
             'board--marker': true,
-            'board--marker_active': this.isMarkerActive(side)
+            'board--marker_active': this.isMarkerActive(side) && !this.props.winner
         }, 'board--marker_' + side);
     }
 
     getTileProps(tile, index) {
         return {
             className: 'tile',
+            disabled: this.state.waitingForPlayers,
             key: index,
             onClick: () => this.handleTileClick(index)
         };
@@ -244,10 +284,14 @@ var mapDispatchToProps = function (dispatch) {
 };
 
 Board.propTypes = {
+    addStone: React.PropTypes.func,
     draw: React.PropTypes.bool,
     gameMode: React.PropTypes.string,
-    tiles: React.PropTypes.array,
-    winner: React.PropTypes.string
+    nextStone: React.PropTypes.string,
+    reset: React.PropTypes.func,
+    tiles: React.PropTypes.arrayOf(React.PropTypes.string),
+    winner: React.PropTypes.string,
+    winningCombination: React.PropTypes.arrayOf(React.PropTypes.number)
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Board);

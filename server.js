@@ -21,7 +21,17 @@ var io = require('socket.io')(server);
 io.on('connection', (socket) => {
     socket.on('room', (room) => {
         socket.join(room);
-        socket.emit('assing_id', _.uniqueId('user_'));
+        socket.emit('assing_id', socket.id);
+    });
+
+    socket.on('get_player_count', (room) => {
+        let playerCount = io.sockets.adapter.rooms[room].length;
+
+        if (playerCount < 2) {
+            io.sockets.in(room).emit('waiting');
+        } else {
+            io.sockets.in(room).emit('ready');
+        }
     });
 
     socket.on('add_stone', (data) => {
