@@ -13,13 +13,13 @@ class Board extends React.Component {
 
         this.socket = io();
 
-        if (props.gameMode === 'multiplayer') {
+        if (props.location.query.mode === 'multiplayer') {
             this.room = 'room123';
             this.id = '';
         }
 
         this.state = {
-            hideMessage: false,
+            hideMessage: true,
             lastUserInput: '',
             restartRequested: false,
             waitingForRestart: false,
@@ -27,7 +27,7 @@ class Board extends React.Component {
         };
     }
 
-    componentWillMount() {
+    componentDidMount() {
         if (this.isMultiplayer()) {
             this.socket.on('connect', () => {
                 this.socket.emit('room', this.room);
@@ -108,7 +108,7 @@ class Board extends React.Component {
     renderWaitingForPlayers() {
         var contentToRender = null;
 
-        if (this.state.waitingForPlayers) {
+        if (this.isMultiplayer() && this.state.waitingForPlayers) {
             contentToRender = (
                 <div className="board--waiting-players">
                     Waiting for at least one more player to join the room...
@@ -250,7 +250,7 @@ class Board extends React.Component {
     }
 
     isMultiplayer() {
-        return (this.props.gameMode === 'multiplayer');
+        return (this.props.location.query.mode === 'multiplayer');
     }
 }
 
@@ -286,7 +286,6 @@ var mapDispatchToProps = function (dispatch) {
 Board.propTypes = {
     addStone: React.PropTypes.func,
     draw: React.PropTypes.bool,
-    gameMode: React.PropTypes.string,
     nextStone: React.PropTypes.string,
     reset: React.PropTypes.func,
     tiles: React.PropTypes.arrayOf(React.PropTypes.string),

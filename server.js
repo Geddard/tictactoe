@@ -11,6 +11,10 @@ app.use(express.static(path.join(__dirname, 'dist')));
 
 app.use('/res', express.static(path.join(__dirname, 'resources')));
 
+app.get('*', function (request, response){
+  response.sendFile(path.resolve(__dirname, 'dist', 'index.html'));
+});
+
 var server = app.listen(port, function(){
     console.log('Started listening on port', port);
 });

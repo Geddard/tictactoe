@@ -9,31 +9,4 @@ body {
 .app {
     color: #fff;
     text-align: center;
-
-    &--title {
-        font-size: 50px;
-        font-weight: bold;
-    }
-
-    &--mode {
-
-        &-title {
-            font-size: 50px;
-            opacity: 1;
-            padding: 20px;
-            text-transform: uppercase;
-        }
-
-        &-button {
-            background-color: #5551D9;
-            border-color: #5551D9;
-            color: #ccc;
-            font-size: 20px;
-            font-weight: bold;
-            margin: 10px;
-            padding: 10px;
-            text-transform: uppercase;
-            width: 200px;
-        }
-    }
 }
