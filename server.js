@@ -55,7 +55,7 @@ io.on('connection', (socket) => {
         io.sockets.in(room).emit('restart_all');
     });
 
-    socket.on('forceDisconnect', (userId) => {
+    socket.on('forceDisconnect', () => {
         var rooms = io.sockets.adapter.rooms;
 
         for (var room in rooms) {

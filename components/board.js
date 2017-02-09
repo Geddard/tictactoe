@@ -80,7 +80,7 @@ class Board extends React.Component {
     }
 
     componentWillUnmount() {
-        this.socket.emit('forceDisconnect', this.id);
+        this.socket.emit('forceDisconnect');
     }
 
     render() {
