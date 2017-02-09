@@ -31,4 +31,12 @@ io.on('connection', (socket) => {
     socket.on('add_stone_solo', (data) => {
         socket.emit('update_board', data);
     });
+
+    socket.on('request_restart', (room) => {
+        io.sockets.in(room).emit('confirm_restart');
+    });
+
+    socket.on('request_confirmed', (room) => {
+        io.sockets.in(room).emit('restart_all');
+    });
 });

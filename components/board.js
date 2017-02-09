@@ -1,4 +1,3 @@
-import _ from 'lodash';
 import React from 'react';
 import { connect } from 'react-redux';
 import classNames from 'classnames';
@@ -20,20 +19,30 @@ class Board extends React.Component {
         }
 
         this.state = {
-            lastUserInput: ''
+            lastUserInput: '',
+            restartRequested: false,
+            waitingForRestart: false
         };
     }
 
     componentDidMount() {
-        var isMultiplayer = (this.props.gameMode === 'multiplayer');
-
-        if (isMultiplayer) {
+        if (this.isMultiplayer()) {
             this.socket.on('connect', () => {
                 this.socket.emit('room', this.room);
             });
 
             this.socket.on('assing_id', (id) => {
                 this.id = id;
+            });
+
+            this.socket.on('confirm_restart', () => {
+                this.setState({
+                    restartRequested: true
+                });
+            });
+
+            this.socket.on('restart_all', () => {
+                this.resetGame();
             });
         } else {
             this.id = 'soloUser';
@@ -42,7 +51,7 @@ class Board extends React.Component {
         this.socket.on('update_board', (data) => {
             this.props.addStone(data);
 
-            if (isMultiplayer) {
+            if (this.isMultiplayer()) {
                 this.setState({
                     lastUserInput: data.userId
                 });
@@ -50,16 +59,14 @@ class Board extends React.Component {
         });
     }
 
-    shouldComponentUpdate(nextProps) {
-        return (!_.isEqual(this.props.tiles, nextProps.tiles));
-    }
-
     render() {
         return (
             <div className="board">
+                <div className={this.getMarkerClass('left')}>X</div>
                 <div className="board--container">
                     {this.props.tiles.map((tile, index) => this.renderTile(tile, index))}
                 </div>
+                <div className={this.getMarkerClass('right')}>O</div>
                 {this.renderWinner()}
             </div>
         );
@@ -90,10 +97,36 @@ class Board extends React.Component {
             return (
                 <div className="board--container-result">
                     <div>{result}</div>
-                    <button className="board--container-button" onClick={() => this.resetGame()}>New Game</button>
+                    {this.renderWaitingMessage()}
+                    {this.renderRestartRequestMessage()}
+                    <button {...this.getRestartButtonProps()}>New Game</button>
                 </div>
             );
         }
+    }
+
+    renderWaitingMessage() {
+        if (this.state.waitingForRestart) {
+            return <div className="board--container-waiting">Waiting for restar confirmation...</div>;
+        }
+    }
+
+    renderRestartRequestMessage() {
+        if (this.state.restartRequested && !this.state.waitingForRestart) {
+            return (
+                <div className="board--container-waiting">
+                    Another player requested a restart...
+                    Please confirm by pressing New Game
+                </div>
+            );
+        }
+    }
+
+    getMarkerClass(side) {
+        return classNames({
+            'board--marker': true,
+            'board--marker_active': this.isMarkerActive(side)
+        }, 'board--marker_' + side);
     }
 
     getTileProps(tile, index) {
@@ -109,6 +142,14 @@ class Board extends React.Component {
             'tile--content': true,
             'tile--content_winner': this.isThisAWinner(index)
         });
+    }
+
+    getRestartButtonProps() {
+        return {
+            className: 'board--container-button',
+            disabled: this.state.waitingForRestart,
+            onClick: () => this.requestRestart()
+        };
     }
 
     isThisAWinner(index) {
@@ -128,7 +169,7 @@ class Board extends React.Component {
                 room: this.room
             };
 
-            if (this.props.gameMode === 'multiplayer') {
+            if (this.isMultiplayer()) {
                 this.socket.emit('add_stone', data);
             } else {
                 this.socket.emit('add_stone_solo', data);
@@ -136,11 +177,40 @@ class Board extends React.Component {
         }
     }
 
+    requestRestart() {
+        if (this.isMultiplayer()) {
+            if (this.state.restartRequested) {
+                this.socket.emit('request_confirmed', this.room);
+            } else {
+                this.setState({
+                    waitingForRestart: true
+                });
+                this.socket.emit('request_restart', this.room);
+            }
+
+        } else {
+            this.resetGame();
+        }
+    }
+
     resetGame() {
         this.props.reset();
         this.setState({
-            lastUserInput: ''
+            lastUserInput: '',
+            restartRequested: false,
+            waitingForRestart: false
         });
+    }
+
+    isMarkerActive(side) {
+        var nextStone = this.props.nextStone;
+
+        return (side === 'left' && nextStone === 'x' ||
+            side === 'right' && nextStone === 'o');
+    }
+
+    isMultiplayer() {
+        return (this.props.gameMode === 'multiplayer');
     }
 }
 
