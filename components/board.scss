@@ -1,9 +1,21 @@
 .board {
     height: 500px;
     left: 50%;
+    margin-top: 50px;
     max-width: 500px;
     position: relative;
     transform: translateX(-50%);
+
+    &--waiting-players {
+        animation: fade 1s infinite;
+        font-size: 30px;
+        font-weight: bold;
+    }
+
+    &--player-joined {
+        font-size: 30px;
+        font-weight: bold;
+    }
 
     &--marker {
         font-size: 70px;
