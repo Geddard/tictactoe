@@ -27,7 +27,7 @@ class Board extends React.Component {
         };
     }
 
-    componentDidMount() {
+    componentWillMount() {
         if (this.isMultiplayer()) {
             this.socket.on('connect', () => {
                 this.socket.emit('room', this.room);
