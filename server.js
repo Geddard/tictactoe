@@ -5,7 +5,9 @@ var app = express();
 
 var port = process.env.PORT || 3000;
 
-app.use(require('connect-livereload')({port: 35680}));
+if (process.env.NODE_ENV === 'development') {
+    app.use(require('connect-livereload')({port: 35680}));
+}
 
 app.use(express.static(path.join(__dirname, 'dist')));
 
@@ -51,5 +53,13 @@ io.on('connection', (socket) => {
 
     socket.on('request_confirmed', (room) => {
         io.sockets.in(room).emit('restart_all');
+    });
+
+    socket.on('forceDisconnect', (userId) => {
+        var rooms = io.sockets.adapter.rooms;
+
+        for (var room in rooms) {
+            socket.leave(room);
+        }
     });
 });

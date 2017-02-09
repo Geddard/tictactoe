@@ -29,9 +29,7 @@ class Board extends React.Component {
 
     componentWillMount() {
         if (this.isMultiplayer()) {
-            this.socket.on('connect', () => {
-                this.socket.emit('room', this.room);
-            });
+            this.socket.emit('room', this.room);
 
             this.socket.on('assing_id', (id) => {
                 this.id = id;
@@ -79,6 +77,10 @@ class Board extends React.Component {
                 });
             }
         });
+    }
+
+    componentWillUnmount() {
+        this.socket.emit('forceDisconnect', this.id);
     }
 
     render() {
