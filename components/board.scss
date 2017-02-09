@@ -5,9 +5,36 @@
     position: relative;
     transform: translateX(-50%);
 
+    &--marker {
+        font-size: 70px;
+        font-weight: bold;
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+
+        &_active {
+            animation: fade 1s infinite;
+            color: #5551D9;
+        }
+
+        &_left {
+            left: -70px;
+        }
+
+        &_right {
+            right: -70px;
+        }
+    }
+
     &--container {
         animation: fadeIn 1.5s;
         color: #fff;
+
+        &-waiting {
+            animation: fade 1s infinite;
+            font-size: 30px;
+            font-weight: bold;
+        }
 
         &-result {
             bottom: -150px;
@@ -29,6 +56,14 @@
             margin-top: 30px;
             max-width: 200px;
             padding: 20px;
+
+            &:active {
+                background-color: #2B2A71;
+            }
+
+            &:disabled {
+                background-color: #9C9C9C;
+            }
         }
     }
 
@@ -42,7 +77,6 @@
         width: calc(100% / 3);
 
         &--content {
-            font-family: Helvetica, Arial, 'Sans serif';
             font-size: 100px;
             left: 50%;
             position: absolute;

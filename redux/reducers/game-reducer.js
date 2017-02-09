@@ -17,12 +17,10 @@ var stones = {
 var winningCombination = [];
 var initialState = {
     draw: false,
-    draws: 0,
     nextStone: stones.x,
-    oWins: 0,
     tiles: ['','','','','','','','',''],
     winner: '',
-    xWins: 0
+    winningCombination: []
 };
 var isThereAWinner = function (combination, stone, stateTiles) {
     return _.every(combination, function(tile) {
@@ -82,16 +80,9 @@ export default function (state, action) {
             return newState;
 
         case 'reset_game':
-            var resetState = {
-                draw: initialState.draw,
-                nextStone: initialState.nextStone,
-                tiles: initialState.tiles,
-                winner: initialState.winner
-            };
+            winningCombination = [];
 
-            newState.winningCombination = [];
-
-            return _.extend(newState, resetState);
+            return initialState;
 
         default: return newState || initialState;
     }
